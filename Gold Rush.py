@@ -34,7 +34,7 @@ while lobby:
             if event.key == pygame.K_ESCAPE:
                 lobby = False
             
-    window.blit(objekt, (0, 0))  # Vykreslení objektu s pozadím
+    window.blit(objekt, (0, -100))  # Vykreslení objektu s pozadím
     pygame.display.flip()
     
 
