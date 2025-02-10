@@ -17,7 +17,14 @@ background = pygame.image.load(image_path).convert_alpha()
 objekt = pygame.Surface(background.get_size())
 #peníze
 money_count = 0
-font = pygame.font.Font(None, 50)
+font = pygame.font.Font(None, 60)
+
+#hlína
+red = (255, 0, 0)
+green = (0, 255, 0)
+dirt_color = red
+font = pygame.font.Font(None, 60)
+dirt_count = 0
 try:
     background = pygame.image.load(image_path).convert_alpha()  # Přejmenováno na 'background'
     objekt = pygame.Surface(background.get_size())
@@ -35,10 +42,19 @@ while lobby:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 lobby = False
-    money = font.render(f'Money: {money_count}', True, (255, 0, 0))
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_p:
+                dirt_count += 10
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_o:
+                money_count += 10
+    money = font.render(f'Money: {money_count}', True, (255, 0, 0)) # definice vykreslení hodnoty peněz
+    dirt = font.render(f'Dirt: {dirt_count}/100', True, dirt_color)
+    if dirt_count > 99:
+        dirt_color = green
+        dirt_count = 100
     window.blit(objekt, (0, -100))  # Vykreslení objektu s pozadím
     window.blit(money, (10, 10)) # Vykreslení počtu peněz
+    window.blit(dirt, (300, 10))
     pygame.display.flip()
-    
-
 pygame.quit()
