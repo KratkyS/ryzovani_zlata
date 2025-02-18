@@ -1,4 +1,4 @@
-import random
+import random 
 import os
 import pygame
 
@@ -19,6 +19,7 @@ button_path_lobby = os.path.join("images", "button_image.png")
 button_image = pygame.image.load(button_path_lobby).convert_alpha()
 button_rect = button_image.get_rect(topleft=(600, -15))  # Nastavení pozice tlačítka
 
+  
 
 # Dirt minihra
 image_path_dirt = os.path.join("images", "dirt_minigame.png")
@@ -33,20 +34,17 @@ dirt_value = 2
 dirt_object_color = (150, 75, 0)
 
 
-
 for index in range(dirt_count):
     dirt_x.append(random.randint(10, 600))
     dirt_y.append(random.randint(10, 600))
     dirt_rects.append(pygame.Rect(dirt_x[index], dirt_y[index], dirt_size, dirt_size))
-    
-
 
 
 # Herní proměnné
 money_count = 0
 font = pygame.font.Font(None, 60)
 red = (255, 0, 0)
-green = (0, 255, 0)
+green = (0, 255, 10)
 dirt_color = red
 dirt_count = 0
 button_position = (600, -15)
@@ -75,8 +73,7 @@ while Game:
                     lobby = False
                     dirt_minigame = True
                     dirt_render = True
-                    
-                
+                 
 
         # Vykreslení lobby
         objekt_lobby.blit(background, (0, 0))
@@ -96,7 +93,6 @@ while Game:
     # DIRT_MINIGAME 
     while dirt_minigame:
         
-        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -104,11 +100,28 @@ while Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                    dirt_minigame = False
-            
-            
-            
-           
-           
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = event.pos
+                mouse_rect = pygame.Rect(mouse_x, mouse_y, 1, 1)
+                
+                clicked_inside_dirt = False
+                for index in range(len(dirt_rects)-1, -1, -1):  
+                    if dirt_rects[index].colliderect(mouse_rect):  
+                        dirt_count += dirt_value
+                        
+                        del dirt_x[index]
+                        del dirt_y[index]
+                        del dirt_rects[index]
+                        dirt_x.append(random.randint(10, 600))
+                        dirt_y.append(random.randint(10, 600))
+                        dirt_rects.append(pygame.Rect(dirt_x[-1], dirt_y[-1], dirt_size, dirt_size))
+                        clicked_inside_dirt = True
+                        break
+                
+                # Pokud bylo kliknuto mimo objekt hlíny, odečteme 1 od dirt_count
+                if not clicked_inside_dirt:
+                    dirt_count -= 1
 
         # Vykreslení dirt minihry
         money = font.render(f'Money: {money_count}', True, (255, 0, 0))
@@ -122,25 +135,8 @@ while Game:
         window.blit(money, (10, 10))
         window.blit(dirt, (300, 10))
         
-        mouse_rect = pygame.Rect(mouse_x, mouse_y, 1, 1)
-        
         for index in range(len(dirt_x)):
-          pygame.draw.ellipse(window, (dirt_object_color), (dirt_x[index], dirt_y[index], dirt_size, dirt_size))
-          
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_x, mouse_y = event.pos
-            for index in range(len(dirt_rects)-1, -1, -1):  
-                if dirt_rects[index].colliderect(mouse_rect):  
-                        dirt_count += dirt_value
-                        del dirt_x[index]
-                        del dirt_y[index]
-                        del dirt_rects[index]
-                        dirt_x.append(random.randint(10, 600))
-                        dirt_y.append(random.randint(10, 600))
-                        dirt_rects.append(pygame.Rect(dirt_x[-1], dirt_y[-1], dirt_size, dirt_size))
-                        break
-                        
+          pygame.draw.ellipse(window, dirt_object_color, (dirt_x[index], dirt_y[index], dirt_size, dirt_size))
         
         pygame.display.flip()
-        
 
