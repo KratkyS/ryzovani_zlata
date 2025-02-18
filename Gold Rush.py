@@ -32,7 +32,17 @@ dirt_y = []
 dirt_rects = []
 dirt_value = 2
 dirt_object_color = (150, 75, 0)
+dirt_penality = 1
 
+# popcorn čísla
+popcorn_2 = pygame.font.Font(None, 60).render(f'+{dirt_value}', True, (0, 255, 0))
+
+popcorn_1 = pygame.font.Font(None, 60).render(f'-{dirt_penality}', True, (255, 0, 0))
+
+def popcorn_plus():
+    window.blit(popcorn_2, (300, 40))  
+def popcorn_minus():
+    window.blit(popcorn_1, (430, 40)) 
 
 for index in range(dirt_count):
     dirt_x.append(random.randint(10, 600))
@@ -50,7 +60,11 @@ dirt_count = 0
 button_position = (600, -15)
 mouse_x, mouse_y = 0, 0
 
-
+# Časování pro popcorn
+popcorn_timer = 0  # Čas, kdy má být text zobrazen
+popcorn_duration = 500  # Délka zobrazení v milisekundách (2 sekundy)
+popcorn_visible2 = False # Určuje, zda je popcorn text viditelný
+popcorn_visible1 = False
 Game = True
 while Game:
     lobby = True
@@ -110,6 +124,9 @@ while Game:
                     if dirt_rects[index].colliderect(mouse_rect):  
                         dirt_count += dirt_value
                         
+                        popcorn_timer = pygame.time.get_ticks()  # Uložíme aktuální čas
+                        popcorn_visible2 = True
+                        
                         del dirt_x[index]
                         del dirt_y[index]
                         del dirt_rects[index]
@@ -121,8 +138,14 @@ while Game:
                 
                 # Pokud bylo kliknuto mimo objekt hlíny, odečteme 1 od dirt_count
                 if not clicked_inside_dirt:
-                    dirt_count -= 1
-
+                    dirt_count -= dirt_penality
+                    popcorn_timer = pygame.time.get_ticks()  # Uložíme aktuální čas
+                    popcorn_visible1 = True
+                    
+            if popcorn_visible2 and pygame.time.get_ticks() - popcorn_timer >= popcorn_duration:
+                popcorn_visible2 = False
+            if popcorn_visible1 and pygame.time.get_ticks() - popcorn_timer >= popcorn_duration:
+                popcorn_visible1 = False
         # Vykreslení dirt minihry
         money = font.render(f'Money: {money_count}', True, (255, 0, 0))
         dirt = font.render(f'Dirt: {dirt_count}/100', True, dirt_color)
@@ -137,6 +160,9 @@ while Game:
         
         for index in range(len(dirt_x)):
           pygame.draw.ellipse(window, dirt_object_color, (dirt_x[index], dirt_y[index], dirt_size, dirt_size))
-        
+        if popcorn_visible2:
+            popcorn_plus()
+        if popcorn_visible1:
+            popcorn_minus()
         pygame.display.flip()
 
