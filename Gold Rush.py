@@ -41,7 +41,7 @@ dirt_y = []
 dirt_rects = []
 dirt_value = 2
 dirt_object_color = (150, 75, 0)
-dirt_penality = 1
+dirt_penality = 4
 
 # popcorn čísla
 popcorn_2 = pygame.font.Font(None, 60).render(f'+{dirt_value}', True, (0, 255, 0))
@@ -77,6 +77,16 @@ popcorn_visible2 = False # Určuje, zda je popcorn text viditelný
 popcorn_visible1 = False
 Game = True
  
+#tlačítko start
+
+rect_x = 200
+rect_y = 100
+start = pygame.font.Font(None, 60).render("start", True, (0, 0, 0))
+rect_surface = pygame.Surface((rect_x, rect_y))
+rect_surface.fill(green)
+rect_rect = pygame.Rect(350, 325, rect_x, rect_y)  # Přímé nastavení souřadnic
+rect_render = True
+
 
 while Game:
     lobby = True
@@ -106,7 +116,9 @@ while Game:
                         print("Tlačítko bylo stisknuto!")
                         lobby = False
                         gold_minigame = True
-                        
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_m:
+                    dirt_count = 100
                     
                  
 
@@ -192,20 +204,31 @@ while Game:
     while gold_minigame:
         dirt_count = 0
         dirt_color = red
-       
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                   dirt_minigame = False
+                    gold_minigame = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = event.pos
+                if rect_render and rect_rect.collidepoint(mouse_x, mouse_y):
+                    rect_render = False  # Skryje tlačítko po kliknutí
+
+        # Vykreslení scény
+        window.blit(resized_gold_background, (0, 0))
         money = font.render(f'Money: {money_count}', True, (255, 0, 0))
         dirt = font.render(f'Dirt: {dirt_count}/100', True, dirt_color)
-        window.blit(resized_gold_background, (0, 0))
         window.blit(money, (10, 10))
         window.blit(dirt, (300, 10))
-        pygame.display.flip()
-        
+
+        if rect_render:
+            window.blit(rect_surface, (300, 300))
+            window.blit(start, (350, 325))
+
+        pygame.display.flip()  # Pouze jedno volání flip()
+
         
 
