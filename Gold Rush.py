@@ -3,7 +3,8 @@ import os
 import pygame
 
 pygame.init()
-
+clock = pygame.time.Clock()
+fps = 60
 # Okno aplikace
 resolution_x = 800
 resolution_y = 700
@@ -42,6 +43,35 @@ dirt_rects = []
 dirt_value = 2
 dirt_object_color = (150, 75, 0)
 dirt_penality = 4
+max_dirt = 10
+min_dirt = 5
+max_gold = 5
+min_gold = 2
+gold_money_value = 10
+dirt_money_value = 2
+pan_width = 100
+pan_height = 50
+pan_x = resolution_x // 2 - pan_width // 2
+pan_y = resolution_y - pan_height - 20
+pan_rect = pygame.Rect(pan_x, pan_y, pan_width, pan_height)
+dirt_balls = []
+gold_balls = []
+ball_size = 30
+ball_speed = 3
+
+def create_balls():
+    dirt_balls.clear()
+    gold_balls.clear()
+    num_dirt = random.randint(min_dirt, max_dirt)
+    num_gold = random.randint(min_gold, max_gold)
+    for _ in range(num_dirt):
+        x = random.randint(0, resolution_x - ball_size)
+        y = random.randint(-resolution_y, -ball_size)
+        dirt_balls.append(pygame.Rect(x, y, ball_size, ball_size))
+    for _ in range(num_gold):
+        x = random.randint(0, resolution_x - ball_size)
+        y = random.randint(-resolution_y, -ball_size)
+        gold_balls.append(pygame.Rect(x, y, ball_size, ball_size))
 
 # popcorn čísla
 popcorn_2 = pygame.font.Font(None, 60).render(f'+{dirt_value}', True, (0, 255, 0))
@@ -204,7 +234,7 @@ while Game:
     while gold_minigame:
         dirt_count = 0
         dirt_color = red
-        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -216,7 +246,40 @@ while Game:
                 mouse_x, mouse_y = event.pos
                 if rect_render and rect_rect.collidepoint(mouse_x, mouse_y):
                     rect_render = False  # Skryje tlačítko po kliknutí
+                    create_balls()
 
+        # Ovládání pánve
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] and pan_rect.x > 0:
+            pan_rect.x -= 5
+        if keys[pygame.K_RIGHT] and pan_rect.x < resolution_x - pan_width:
+            pan_rect.x += 5
+        if keys[pygame.K_UP] and pan_rect.x > 0:
+            pan_rect.y -= 5
+        if keys[pygame.K_DOWN] and pan_rect.x < resolution_x - pan_width:
+            pan_rect.y += 5
+
+        # Pohyb koulí
+        for ball in dirt_balls[:]:  # Iterujeme přes kopii seznamu
+            ball.y += ball_speed
+            if ball.y > resolution_y:
+                dirt_balls.remove(ball)
+                
+
+        for ball in gold_balls[:]: # Iterujeme přes kopii seznamu
+            ball.y += ball_speed
+            if ball.y > resolution_y:
+                gold_balls.remove(ball)
+
+        # Kontrola kolize
+        for ball in dirt_balls[:]:
+            if pan_rect.colliderect(ball):
+                dirt_balls.remove(ball)
+                money_count -= dirt_money_value
+        for ball in gold_balls[:]:
+            if pan_rect.colliderect(ball):
+                gold_balls.remove(ball)
+                money_count += gold_money_value
         # Vykreslení scény
         window.blit(resized_gold_background, (0, 0))
         money = font.render(f'Money: {money_count}', True, (255, 0, 0))
@@ -228,7 +291,19 @@ while Game:
             window.blit(rect_surface, (300, 300))
             window.blit(start, (350, 325))
 
-        pygame.display.flip()  # Pouze jedno volání flip()
+        pygame.draw.rect(window, (100, 100, 100), pan_rect) # Vykreslení pánve
 
-        
+        # Vykreslení koulí
+        for ball in dirt_balls:
+            pygame.draw.circle(window, (150, 75, 0), ball.center, ball_size // 2)
+        for ball in gold_balls:
+            pygame.draw.circle(window, (255, 255, 0), ball.center, ball_size // 2)
+
+        # Kontrola, zda jsou všechny koule pryč
+        if not dirt_balls and not gold_balls and not rect_render:
+            gold_minigame = False
+            rect_render = True
+
+        clock.tick(fps)
+        pygame.display.flip()
 
