@@ -18,7 +18,7 @@ objekt_lobby = pygame.Surface(background.get_size())
 #tlačítko
 button_path_lobby = os.path.join("images", "button_image.png")
 button_image = pygame.image.load(button_path_lobby).convert_alpha()
-button_rect = button_image.get_rect(topleft=(600, -15))  # Nastavení pozice tlačítka
+button_rect = button_image.get_rect(topleft=(600, -15))  
 
 #tlačítko 2
 button2_path_lobby = os.path.join("images", "Gold_panning_button.png")
@@ -101,9 +101,9 @@ button2_position = (610, 175)
 mouse_x, mouse_y = 0, 0
 
 # Časování pro popcorn
-popcorn_timer = 0  # Čas, kdy má být text zobrazen
-popcorn_duration = 500  # Délka zobrazení v milisekundách (2 sekundy)
-popcorn_visible2 = False # Určuje, zda je popcorn text viditelný
+popcorn_timer = 0  
+popcorn_duration = 500
+popcorn_visible2 = False 
 popcorn_visible1 = False
 Game = True
  
@@ -114,7 +114,7 @@ rect_y = 100
 start = pygame.font.Font(None, 60).render("start", True, (0, 0, 0))
 rect_surface = pygame.Surface((rect_x, rect_y))
 rect_surface.fill(green)
-rect_rect = pygame.Rect(350, 325, rect_x, rect_y)  # Přímé nastavení souřadnic
+rect_rect = pygame.Rect(350, 325, rect_x, rect_y) 
 rect_render = True
 
 
@@ -133,24 +133,19 @@ while Game:
                     pygame.quit()
                     exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_x, mouse_y = event.pos  # Souřadnice kliknutí
-                if button_rect.collidepoint(mouse_x, mouse_y):  # Kontrola kliknutí na tlačítko
+                mouse_x, mouse_y = event.pos 
+                if button_rect.collidepoint(mouse_x, mouse_y):  
                     print("Tlačítko bylo stisknuto!")
                     lobby = False
                     dirt_minigame = True
                     dirt_render = True
             if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_x, mouse_y = event.pos  # Souřadnice kliknutí
+                mouse_x, mouse_y = event.pos  
                 if button2_rect.collidepoint(mouse_x, mouse_y):
                     if dirt_count >99:
                         print("Tlačítko bylo stisknuto!")
                         lobby = False
-                        gold_minigame = True
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_m:
-                    dirt_count = 100
-                    
-                 
+                        gold_minigame = True 
 
         # Vykreslení lobby
         objekt_lobby.blit(background, (0, 0))
@@ -188,7 +183,7 @@ while Game:
                     if dirt_rects[index].colliderect(mouse_rect):  
                         dirt_count += dirt_value
                         
-                        popcorn_timer = pygame.time.get_ticks()  # Uložíme aktuální čas
+                        popcorn_timer = pygame.time.get_ticks()  
                         popcorn_visible2 = True
                         
                         del dirt_x[index]
@@ -200,10 +195,10 @@ while Game:
                         clicked_inside_dirt = True
                         break
                 
-                # Pokud bylo kliknuto mimo objekt hlíny, odečteme 1 od dirt_count
+              
                 if not clicked_inside_dirt:
                     dirt_count -= dirt_penality
-                    popcorn_timer = pygame.time.get_ticks()  # Uložíme aktuální čas
+                    popcorn_timer = pygame.time.get_ticks()  
                     popcorn_visible1 = True
                     
             if popcorn_visible2 and pygame.time.get_ticks() - popcorn_timer >= popcorn_duration:
@@ -245,7 +240,7 @@ while Game:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = event.pos
                 if rect_render and rect_rect.collidepoint(mouse_x, mouse_y):
-                    rect_render = False  # Skryje tlačítko po kliknutí
+                    rect_render = False  
                     create_balls()
 
         # Ovládání pánve
@@ -260,13 +255,13 @@ while Game:
             pan_rect.y += 5
 
         # Pohyb koulí
-        for ball in dirt_balls[:]:  # Iterujeme přes kopii seznamu
+        for ball in dirt_balls[:]: 
             ball.y += ball_speed
             if ball.y > resolution_y:
                 dirt_balls.remove(ball)
                 
 
-        for ball in gold_balls[:]: # Iterujeme přes kopii seznamu
+        for ball in gold_balls[:]: 
             ball.y += ball_speed
             if ball.y > resolution_y:
                 gold_balls.remove(ball)
@@ -291,7 +286,7 @@ while Game:
             window.blit(rect_surface, (300, 300))
             window.blit(start, (350, 325))
 
-        pygame.draw.rect(window, (100, 100, 100), pan_rect) # Vykreslení pánve
+        pygame.draw.rect(window, (100, 100, 100), pan_rect)
 
         # Vykreslení koulí
         for ball in dirt_balls:
@@ -299,7 +294,7 @@ while Game:
         for ball in gold_balls:
             pygame.draw.circle(window, (255, 255, 0), ball.center, ball_size // 2)
 
-        # Kontrola, zda jsou všechny koule pryč
+        
         if not dirt_balls and not gold_balls and not rect_render:
             gold_minigame = False
             rect_render = True
