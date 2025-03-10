@@ -102,7 +102,7 @@ mouse_x, mouse_y = 0, 0
 
 # Časování pro popcorn
 popcorn_timer = 0  
-popcorn_duration = 500
+popcorn_duration = 300
 popcorn_visible2 = False 
 popcorn_visible1 = False
 Game = True
@@ -155,6 +155,8 @@ while Game:
         if dirt_count > 99:
             dirt_color = green
             dirt_count = 100
+        if dirt_count < -99:
+            dirt_count = -100
 
         window.blit(objekt_lobby, (0, -100))  
         window.blit(money, (10, 10))  
@@ -212,6 +214,8 @@ while Game:
             dirt_color = green
             dirt_count = 100
             dirt_minigame = False
+        if dirt_count < -99:
+            dirt_count = -100
         
         window.blit(background_dirt, (0, -200))
         window.blit(money, (10, 10))
