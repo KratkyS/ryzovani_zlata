@@ -382,4 +382,5 @@ while Game:
 
         clock.tick(fps)
         pygame.display.flip()
+        #text jen pro to abych měl v commitu program a ne jen přidanou fotografii a nemusel chodit do předešlých commitů
 
