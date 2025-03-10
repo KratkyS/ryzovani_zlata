@@ -40,15 +40,25 @@ dirt_size = 100
 dirt_x = []
 dirt_y = []
 dirt_rects = []
-dirt_value = 2
+
 dirt_object_color = (150, 75, 0)
-dirt_penality = 4
+dirt_penality_max = 20
+dirt_penality_min = 3
 max_dirt = 10
 min_dirt = 5
 max_gold = 5
 min_gold = 2
-gold_money_value = 10
-dirt_money_value = 2
+gold_money_max_value = 20
+gold_money_min_value = 1
+dirt_money_max_value = 20
+dirt_money_min_value = 1
+dirt_value_max = 8
+dirt_value_min = 1
+
+dirt_value = random.randint(dirt_value_min, dirt_value_max)
+dirt_penality = random.randint(dirt_penality_min, dirt_penality_max)
+gold_money_value = random.randint(gold_money_min_value, gold_money_max_value)
+dirt_money_value = random.randint(dirt_money_min_value, dirt_money_max_value)
 pan_width = 100
 pan_height = 50
 pan_x = resolution_x // 2 - pan_width // 2
@@ -105,6 +115,17 @@ popcorn_timer = 0
 popcorn_duration = 300
 popcorn_visible2 = False 
 popcorn_visible1 = False
+
+gold_popcorn_timer = 0  
+gold_popcorn_duration = 300
+gold_popcorn_visible = False
+gold_popcorn_value = 0 
+
+dirt_popcorn_timer = 0  
+dirt_popcorn_duration = 300
+dirt_popcorn_visible = False
+dirt_popcorn_value = 0
+
 Game = True
  
 #tlačítko start
@@ -122,6 +143,7 @@ while Game:
     lobby = True
     dirt_minigame = False
     gold_minigame = False
+    
     # LOBBY SMYČKA
     while lobby:
         for event in pygame.event.get():
@@ -145,11 +167,14 @@ while Game:
                     if dirt_count >99:
                         print("Tlačítko bylo stisknuto!")
                         lobby = False
-                        gold_minigame = True 
-
+                        gold_minigame = True
+        if money_count > 0:
+            money_color = green
+        else:
+            money_color = red
         # Vykreslení lobby
         objekt_lobby.blit(background, (0, 0))
-        money = font.render(f'Money: {money_count}', True, (255, 0, 0))
+        money = font.render(f'Money: {money_count}$', True, money_color)
         dirt = font.render(f'Dirt: {dirt_count}/100', True, dirt_color)
 
         if dirt_count > 99:
@@ -182,11 +207,14 @@ while Game:
                 
                 clicked_inside_dirt = False
                 for index in range(len(dirt_rects)-1, -1, -1):  
-                    if dirt_rects[index].colliderect(mouse_rect):  
+                    if dirt_rects[index].colliderect(mouse_rect):
+                        dirt_value = random.randint(dirt_value_min, dirt_value_max)
+                    
                         dirt_count += dirt_value
                         
                         popcorn_timer = pygame.time.get_ticks()  
                         popcorn_visible2 = True
+                        popcorn_2 = pygame.font.Font(None, 60).render(f'+{dirt_value}', True, (0, 255, 0))
                         
                         del dirt_x[index]
                         del dirt_y[index]
@@ -199,23 +227,31 @@ while Game:
                 
               
                 if not clicked_inside_dirt:
+                    dirt_penality = random.randint(dirt_penality_min, dirt_penality_max)
                     dirt_count -= dirt_penality
                     popcorn_timer = pygame.time.get_ticks()  
                     popcorn_visible1 = True
+                    popcorn_1 = pygame.font.Font(None, 60).render(f'-{dirt_penality}', True, (255, 0, 0))
+                    
                     
             if popcorn_visible2 and pygame.time.get_ticks() - popcorn_timer >= popcorn_duration:
                 popcorn_visible2 = False
             if popcorn_visible1 and pygame.time.get_ticks() - popcorn_timer >= popcorn_duration:
                 popcorn_visible1 = False
         # Vykreslení dirt minihry
-        money = font.render(f'Money: {money_count}', True, (255, 0, 0))
-        dirt = font.render(f'Dirt: {dirt_count}/100', True, dirt_color)
+        if money_count > 0:
+            money_color = green
+        else:
+            money_color = red
+        
         if dirt_count > 99:
             dirt_color = green
             dirt_count = 100
             dirt_minigame = False
         if dirt_count < -99:
             dirt_count = -100
+        money = font.render(f'Money: {money_count}$', True, money_color)
+        dirt = font.render(f'Dirt: {dirt_count}/100', True, dirt_color)
         
         window.blit(background_dirt, (0, -200))
         window.blit(money, (10, 10))
@@ -233,6 +269,9 @@ while Game:
     while gold_minigame:
         dirt_count = 0
         dirt_color = red
+        money_color = red
+        
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -273,18 +312,51 @@ while Game:
         # Kontrola kolize
         for ball in dirt_balls[:]:
             if pan_rect.colliderect(ball):
-                dirt_balls.remove(ball)
-                money_count -= dirt_money_value
+                dirt_money_value = random.randint(dirt_money_min_value, dirt_money_max_value)  
+                money_count -= dirt_money_value  
+                
+                dirt_popcorn_value = -dirt_money_value  
+                dirt_popcorn_timer = pygame.time.get_ticks()
+                dirt_popcorn_visible = True
+        
+                dirt_balls.remove(ball)  
+
         for ball in gold_balls[:]:
             if pan_rect.colliderect(ball):
-                gold_balls.remove(ball)
+                gold_money_value = random.randint(gold_money_min_value, gold_money_max_value)
                 money_count += gold_money_value
+                gold_popcorn_value = gold_money_value  
+                gold_popcorn_timer = pygame.time.get_ticks()
+                gold_popcorn_visible = True
+                
+                gold_balls.remove(ball)
         # Vykreslení scény
         window.blit(resized_gold_background, (0, 0))
-        money = font.render(f'Money: {money_count}', True, (255, 0, 0))
+        if money_count > 0:
+            money_color = green
+        else:
+            money_color = red 
+        money = font.render(f'Money: {money_count}$', True, money_color)
         dirt = font.render(f'Dirt: {dirt_count}/100', True, dirt_color)
+         
         window.blit(money, (10, 10))
         window.blit(dirt, (300, 10))
+        
+        
+        if gold_popcorn_visible:
+            gold_popcorn_text = font.render(f"+{gold_popcorn_value}", True, (0, 255, 0))
+            window.blit(gold_popcorn_text, (350, 40))  
+
+        if dirt_popcorn_visible:
+            dirt_popcorn_text = font.render(f"{dirt_popcorn_value}", True, (255, 0, 0))
+            window.blit(dirt_popcorn_text, (450, 40))  
+
+        # Skrýt popcorn efekt po určité době
+        if gold_popcorn_visible and pygame.time.get_ticks() - gold_popcorn_timer >= gold_popcorn_duration:
+            gold_popcorn_visible = False
+
+        if dirt_popcorn_visible and pygame.time.get_ticks() - dirt_popcorn_timer >= dirt_popcorn_duration:
+            dirt_popcorn_visible = False
 
         if rect_render:
             window.blit(rect_surface, (300, 300))
