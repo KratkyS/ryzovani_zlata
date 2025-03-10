@@ -59,8 +59,8 @@ dirt_value = random.randint(dirt_value_min, dirt_value_max)
 dirt_penality = random.randint(dirt_penality_min, dirt_penality_max)
 gold_money_value = random.randint(gold_money_min_value, gold_money_max_value)
 dirt_money_value = random.randint(dirt_money_min_value, dirt_money_max_value)
-pan_width = 100
-pan_height = 50
+pan_width = 150
+pan_height = 75
 pan_x = resolution_x // 2 - pan_width // 2
 pan_y = resolution_y - pan_height - 20
 pan_rect = pygame.Rect(pan_x, pan_y, pan_width, pan_height)
@@ -271,6 +271,11 @@ while Game:
         dirt_color = red
         money_color = red
         
+        pan_path = os.path.join("images", "pan.png")
+        pan_image = pygame.image.load(pan_path).convert_alpha()
+        resized_pan_image = pygame.transform.scale(pan_image, (pan_width, pan_height))
+
+# Vykreslení pánve místo šedého obdélníku
 
 
         for event in pygame.event.get():
@@ -362,7 +367,7 @@ while Game:
             window.blit(rect_surface, (300, 300))
             window.blit(start, (350, 325))
 
-        pygame.draw.rect(window, (100, 100, 100), pan_rect)
+        window.blit(resized_pan_image, pan_rect.topleft)
 
         # Vykreslení koulí
         for ball in dirt_balls:
