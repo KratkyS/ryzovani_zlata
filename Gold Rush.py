@@ -49,7 +49,7 @@ min_dirt = 5
 max_gold = 5
 min_gold = 2
 gold_money_max_value = 20
-gold_money_min_value = 1
+gold_money_min_value = 5
 dirt_money_max_value = 20
 dirt_money_min_value = 1
 dirt_value_max = 8
@@ -350,11 +350,11 @@ while Game:
         
         if gold_popcorn_visible:
             gold_popcorn_text = font.render(f"+{gold_popcorn_value}", True, (0, 255, 0))
-            window.blit(gold_popcorn_text, (350, 40))  
+            window.blit(gold_popcorn_text, (150, 60))  
 
         if dirt_popcorn_visible:
             dirt_popcorn_text = font.render(f"{dirt_popcorn_value}", True, (255, 0, 0))
-            window.blit(dirt_popcorn_text, (450, 40))  
+            window.blit(dirt_popcorn_text, (100, 60))  
 
         # Skrýt popcorn efekt po určité době
         if gold_popcorn_visible and pygame.time.get_ticks() - gold_popcorn_timer >= gold_popcorn_duration:
