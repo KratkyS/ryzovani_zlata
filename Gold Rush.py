@@ -26,6 +26,12 @@ button2_image = pygame.image.load(button2_path_lobby).convert_alpha()
 button2_rect = button2_image.get_rect(topleft=(610, 175))
 resized_button2 = pygame.transform.scale(button2_image, (175, 175))
 
+#tlačítko shop
+shop_button_path_lobby = os.path.join("images", "shop_button.png")
+shop_button = pygame.image.load(shop_button_path_lobby).convert_alpha()
+shop_button_rect = shop_button.get_rect(topleft=(10, 100))
+resized_shop_button = pygame.transform.scale(shop_button, (200, 75))
+
 #minihra zlata
 image_path_gold = os.path.join("images", "Gold_panning_background.png")
 background_gold = pygame.image.load(image_path_gold).convert_alpha()
@@ -138,12 +144,16 @@ rect_surface.fill(green)
 rect_rect = pygame.Rect(350, 325, rect_x, rect_y) 
 rect_render = True
 
+#shop
+shop_background_path = os.path.join("images", "shop.png")
+shop_background = pygame.image.load(shop_background_path).convert_alpha()
+resized_shop_background = pygame.transform.scale(shop_background, (800, 700))
 
 while Game:
     lobby = True
     dirt_minigame = False
     gold_minigame = False
-    
+    shop_open = False
     # LOBBY SMYČKA
     while lobby:
         for event in pygame.event.get():
@@ -168,6 +178,12 @@ while Game:
                         print("Tlačítko bylo stisknuto!")
                         lobby = False
                         gold_minigame = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = event.pos  
+                if shop_button_rect.collidepoint(mouse_x, mouse_y):
+                    print("přesouvám do shopu")
+                    lobby = False
+                    shop_open = True            
         if money_count > 0:
             money_color = green
         else:
@@ -188,6 +204,7 @@ while Game:
         window.blit(dirt, (300, 10))
         window.blit(button_image, (button_position))
         window.blit(resized_button2, (button2_position))
+        window.blit(resized_shop_button,(10, 50 ))
         pygame.display.flip()
 
     # DIRT_MINIGAME 
@@ -382,5 +399,19 @@ while Game:
 
         clock.tick(fps)
         pygame.display.flip()
-        #text jen pro to abych měl v commitu program a ne jen přidanou fotografii a nemusel chodit do předešlých commitů
+        
+    while shop_open:
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    gold_minigame = False
+                    
+        window.blit(resized_shop_background, (0, 0))
+        pygame.display.flip()
+        
+       
 
