@@ -29,8 +29,14 @@ resized_button2 = pygame.transform.scale(button2_image, (175, 175))
 #tlačítko shop
 shop_button_path_lobby = os.path.join("images", "shop_button.png")
 shop_button = pygame.image.load(shop_button_path_lobby).convert_alpha()
-shop_button_rect = shop_button.get_rect(topleft=(10, 100))
+shop_button_rect = shop_button.get_rect(topleft=(10, 50))
 resized_shop_button = pygame.transform.scale(shop_button, (200, 75))
+
+#tlačítko back
+back_button_path_lobby = os.path.join("images", "back_button.png")
+back_button = pygame.image.load(back_button_path_lobby).convert_alpha()
+back_button_rect = back_button.get_rect(topleft=(10, 50))
+resized_back_button = pygame.transform.scale(back_button, (200, 75))
 
 #minihra zlata
 image_path_gold = os.path.join("images", "Gold_panning_background.png")
@@ -52,13 +58,13 @@ dirt_penality_max = 20
 dirt_penality_min = 3
 max_dirt = 10
 min_dirt = 5
-max_gold = 5
-min_gold = 2
+max_gold = 10
+min_gold = 4
 gold_money_max_value = 20
 gold_money_min_value = 5
 dirt_money_max_value = 20
 dirt_money_min_value = 1
-dirt_value_max = 8
+dirt_value_max = 5
 dirt_value_min = 1
 
 dirt_value = random.randint(dirt_value_min, dirt_value_max)
@@ -72,7 +78,8 @@ pan_y = resolution_y - pan_height - 20
 pan_rect = pygame.Rect(pan_x, pan_y, pan_width, pan_height)
 dirt_balls = []
 gold_balls = []
-ball_size = 30
+gold_ball_size = 20
+dirt_ball_size = 40
 ball_speed = 3
 
 def create_balls():
@@ -81,13 +88,13 @@ def create_balls():
     num_dirt = random.randint(min_dirt, max_dirt)
     num_gold = random.randint(min_gold, max_gold)
     for _ in range(num_dirt):
-        x = random.randint(0, resolution_x - ball_size)
-        y = random.randint(-resolution_y, -ball_size)
-        dirt_balls.append(pygame.Rect(x, y, ball_size, ball_size))
+        x = random.randint(0, resolution_x - dirt_ball_size)
+        y = random.randint(-resolution_y, -dirt_ball_size)
+        dirt_balls.append(pygame.Rect(x, y, dirt_ball_size, dirt_ball_size))
     for _ in range(num_gold):
-        x = random.randint(0, resolution_x - ball_size)
-        y = random.randint(-resolution_y, -ball_size)
-        gold_balls.append(pygame.Rect(x, y, ball_size, ball_size))
+        x = random.randint(0, resolution_x - gold_ball_size)
+        y = random.randint(-resolution_y, -gold_ball_size)
+        gold_balls.append(pygame.Rect(x, y, gold_ball_size, gold_ball_size))
 
 # popcorn čísla
 popcorn_2 = pygame.font.Font(None, 60).render(f'+{dirt_value}', True, (0, 255, 0))
@@ -388,9 +395,9 @@ while Game:
 
         # Vykreslení koulí
         for ball in dirt_balls:
-            pygame.draw.circle(window, (150, 75, 0), ball.center, ball_size // 2)
+            pygame.draw.circle(window, (150, 75, 0), ball.center, dirt_ball_size // 2)
         for ball in gold_balls:
-            pygame.draw.circle(window, (255, 255, 0), ball.center, ball_size // 2)
+            pygame.draw.circle(window, (255, 255, 0), ball.center, gold_ball_size // 2)
 
         
         if not dirt_balls and not gold_balls and not rect_render:
@@ -408,9 +415,21 @@ while Game:
                 exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    gold_minigame = False
-                    
+                    shop_open = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = event.pos  
+                if back_button_rect.collidepoint(mouse_x, mouse_y):
+                    print("přesouvám do lobby")
+                    shop_open = False
+                    lobby = True
+        if money_count > 0:
+            money_color = green
+        else:
+            money_color = red 
+        money = font.render(f'Money: {money_count}$', True, money_color)           
         window.blit(resized_shop_background, (0, 0))
+        window.blit(money, (10, 10))
+        window.blit(resized_back_button,(10, 50 ))
         pygame.display.flip()
         
        
