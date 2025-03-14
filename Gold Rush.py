@@ -35,8 +35,8 @@ resized_shop_button = pygame.transform.scale(shop_button, (200, 75))
 #tlačítko back
 back_button_path_lobby = os.path.join("images", "back_button.png")
 back_button = pygame.image.load(back_button_path_lobby).convert_alpha()
-back_button_rect = back_button.get_rect(topleft=(10, 50))
 resized_back_button = pygame.transform.scale(back_button, (200, 75))
+back_button_rect = resized_back_button.get_rect(topleft=(10, 50))
 
 #minihra zlata
 image_path_gold = os.path.join("images", "Gold_panning_background.png")
@@ -81,6 +81,15 @@ gold_balls = []
 gold_ball_size = 20
 dirt_ball_size = 40
 ball_speed = 3
+yellow = (255, 255, 0)
+upgrade_size = 100
+
+upgrade1_rect = pygame.Rect(50, 150, upgrade_size, upgrade_size)
+upgrade2_rect = pygame.Rect(50, 350, upgrade_size, upgrade_size)
+upgrade3_rect = pygame.Rect(50, 550, upgrade_size, upgrade_size)
+upgrade4_rect = pygame.Rect(650, 150, upgrade_size, upgrade_size)
+upgrade5_rect = pygame.Rect(650, 350, upgrade_size, upgrade_size)
+upgrade6_rect = pygame.Rect(650, 550, upgrade_size, upgrade_size)
 
 def create_balls():
     dirt_balls.clear()
@@ -139,6 +148,8 @@ dirt_popcorn_duration = 300
 dirt_popcorn_visible = False
 dirt_popcorn_value = 0
 
+
+        
 Game = True
  
 #tlačítko start
@@ -408,7 +419,12 @@ while Game:
         pygame.display.flip()
         
     while shop_open:
+        upgrade_color = yellow
         
+    
+   
+
+       
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -422,6 +438,24 @@ while Game:
                     print("přesouvám do lobby")
                     shop_open = False
                     lobby = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = event.pos
+                if upgrade1_rect.collidepoint(mouse_x, mouse_y):
+                    print("Upgrade 1 kliknut!")
+                if upgrade2_rect.collidepoint(mouse_x, mouse_y):
+                    print("Upgrade 2 kliknut!")
+                if upgrade3_rect.collidepoint(mouse_x, mouse_y):
+                    print("Upgrade 3 kliknut!")
+                if upgrade4_rect.collidepoint(mouse_x, mouse_y):
+                    print("Upgrade 4 kliknut!")
+                if upgrade5_rect.collidepoint(mouse_x, mouse_y):
+                    print("Upgrade 5 kliknut!")
+                if upgrade6_rect.collidepoint(mouse_x, mouse_y):
+                    print("Upgrade 6 kliknut!")
+                 
+    # Kreslení obdélníků
+        
+
         if money_count > 0:
             money_color = green
         else:
@@ -430,7 +464,15 @@ while Game:
         window.blit(resized_shop_background, (0, 0))
         window.blit(money, (10, 10))
         window.blit(resized_back_button,(10, 50 ))
+        pygame.draw.rect(window, upgrade_color, upgrade1_rect)
+        pygame.draw.rect(window, upgrade_color, upgrade2_rect)
+        pygame.draw.rect(window, upgrade_color, upgrade3_rect)
+        pygame.draw.rect(window, upgrade_color, upgrade4_rect)
+        pygame.draw.rect(window, upgrade_color, upgrade5_rect)
+        pygame.draw.rect(window, upgrade_color, upgrade6_rect)
         pygame.display.flip()
+        
+        
         
        
 
