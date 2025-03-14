@@ -59,9 +59,9 @@ dirt_penality_min = 3
 max_dirt = 10
 min_dirt = 5
 max_gold = 10
-min_gold = 4
-gold_money_max_value = 20
-gold_money_min_value = 5
+min_gold = 5
+gold_money_max_value = 50
+gold_money_min_value = 15
 dirt_money_max_value = 20
 dirt_money_min_value = 1
 dirt_value_max = 5
@@ -82,14 +82,16 @@ gold_ball_size = 20
 dirt_ball_size = 40
 ball_speed = 3
 yellow = (255, 255, 0)
-upgrade_size = 100
+upgrade_size_x = 200
+upgrade_size_y = 100
 
-upgrade1_rect = pygame.Rect(50, 150, upgrade_size, upgrade_size)
-upgrade2_rect = pygame.Rect(50, 350, upgrade_size, upgrade_size)
-upgrade3_rect = pygame.Rect(50, 550, upgrade_size, upgrade_size)
-upgrade4_rect = pygame.Rect(650, 150, upgrade_size, upgrade_size)
-upgrade5_rect = pygame.Rect(650, 350, upgrade_size, upgrade_size)
-upgrade6_rect = pygame.Rect(650, 550, upgrade_size, upgrade_size)
+
+upgrade1_rect = pygame.Rect(50, 150, upgrade_size_x, upgrade_size_y)
+upgrade2_rect = pygame.Rect(50, 350, upgrade_size_x, upgrade_size_y)
+upgrade3_rect = pygame.Rect(50, 550, upgrade_size_x, upgrade_size_y)
+upgrade4_rect = pygame.Rect(550, 150, upgrade_size_x, upgrade_size_y)
+upgrade5_rect = pygame.Rect(550, 350, upgrade_size_x, upgrade_size_y)
+upgrade6_rect = pygame.Rect(550, 550, upgrade_size_x, upgrade_size_y)
 
 def create_balls():
     dirt_balls.clear()
@@ -162,10 +164,55 @@ rect_surface.fill(green)
 rect_rect = pygame.Rect(350, 325, rect_x, rect_y) 
 rect_render = True
 
+pan_speed = 5
+
 #shop
 shop_background_path = os.path.join("images", "shop.png")
 shop_background = pygame.image.load(shop_background_path).convert_alpha()
 resized_shop_background = pygame.transform.scale(shop_background, (800, 700))
+
+font_shop = pygame.font.Font(None, 10)
+def draw_upgrades():
+    font_shop = pygame.font.Font(None, 15)
+
+    # Rozdělení textů na dva řádky
+    text1 = font_shop.render(f"Větší lopata (100$): Zvyšuje maximální", True, (0, 0, 0))
+    text1_5 = font_shop.render(f"hodnotu sběru hlíny. ({dirt_value_max})", True, (0, 0, 0))
+
+    text2 = font_shop.render(f"Menší riziko (150$): Snižuje minimální ", True, (0, 0, 0))
+    text2_5 = font_shop.render(f"pokutu při sběru hlíny ({dirt_penality_max})", True, (0, 0, 0))
+
+    text3 = font_shop.render(f"Zlatý důl (200$): Zvyšuje maximální ", True, (0, 0, 0))
+    text3_5 = font_shop.render(f"hodnotu gold_money_value. ({gold_money_max_value})", True, (0, 0, 0))
+
+    text4 = font_shop.render(f"Šikovné ruce (120$): Snižuje minimální ", True, (0, 0, 0))
+    text4_5 = font_shop.render(f"penalizaci při rýžování. ({dirt_money_max_value})", True, (0, 0, 0))
+
+    text5 = font_shop.render(f"Rychlejší rýžování (180$): Zvyšuje ", True, (0, 0, 0))
+    text5_5 = font_shop.render("rychlost pánve.", True, (0, 0, 0))
+
+    text6 = font_shop.render(f"Dotace (200$): Zvyšuje minimální)", True, (0, 0, 0))
+    text6_5 = font_shop.render(f"odměnu za zlato ({gold_money_max_value})", True, (0, 0, 0))
+
+
+    # Vykreslení textů
+    window.blit(text1, (55, 160))
+    window.blit(text1_5, (55, 160 + font_shop.get_linesize()))
+
+    window.blit(text2, (55, 360))
+    window.blit(text2_5, (55, 360 + font_shop.get_linesize()))
+
+    window.blit(text3, (55, 560))
+    window.blit(text3_5, (55, 560 + font_shop.get_linesize()))
+
+    window.blit(text4, (555, 160))
+    window.blit(text4_5, (555, 160 + font_shop.get_linesize()))
+
+    window.blit(text5, (555, 360))
+    window.blit(text5_5, (555, 360 + font_shop.get_linesize()))
+
+    window.blit(text6, (555, 560))
+    window.blit(text6_5, (555, 560 + font_shop.get_linesize()))
 
 while Game:
     lobby = True
@@ -329,13 +376,13 @@ while Game:
         # Ovládání pánve
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] and pan_rect.x > 0:
-            pan_rect.x -= 5
+            pan_rect.x -= pan_speed
         if keys[pygame.K_RIGHT] and pan_rect.x < resolution_x - pan_width:
-            pan_rect.x += 5
+            pan_rect.x += pan_speed
         if keys[pygame.K_UP] and pan_rect.x > 0:
-            pan_rect.y -= 5
+            pan_rect.y -= pan_speed
         if keys[pygame.K_DOWN] and pan_rect.x < resolution_x - pan_width:
-            pan_rect.y += 5
+            pan_rect.y += pan_speed
 
         # Pohyb koulí
         for ball in dirt_balls[:]: 
@@ -420,10 +467,6 @@ while Game:
         
     while shop_open:
         upgrade_color = yellow
-        
-    
-   
-
        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -442,16 +485,66 @@ while Game:
                 mouse_x, mouse_y = event.pos
                 if upgrade1_rect.collidepoint(mouse_x, mouse_y):
                     print("Upgrade 1 kliknut!")
+                    cost = 100
+                    if money_count >= cost:
+                        money_count -= cost
+                        dirt_value_max += 2
+                        print("Zakoupen upgrade: Větší lopata")
+                        print(f"Nová maximální hodnota dirt_value: {dirt_value_max}")
+                    else:
+                        print("Nedostatek peněz pro Větší lopatu!")
                 if upgrade2_rect.collidepoint(mouse_x, mouse_y):
-                    print("Upgrade 2 kliknut!")
+                    cost = 150
+                    if money_count >= cost:
+                        money_count -= cost
+                        if dirt_penality_max > 3:
+                            dirt_penality_max -= 2
+                        print("Zakoupen upgrade: Menší riziko")
+                        print(f"Nová maximální hodnota pokuty: {dirt_penality_min}")
+                    else:
+                        print("Nedostatek peněz pro Menší riziko!")
                 if upgrade3_rect.collidepoint(mouse_x, mouse_y):
-                    print("Upgrade 3 kliknut!")
+                    cost = 200
+                    if money_count >= cost:
+                        money_count -= cost
+                        gold_money_max_value += 2
+                        print("Zakoupen upgrade: Zlatý důl")
+                        print(f"Nová maximální hodnota výplaty: {gold_money_max_value}")
+                    else:
+                        print("Nedostatek peněz pro Zlatý důl!")
                 if upgrade4_rect.collidepoint(mouse_x, mouse_y):
-                    print("Upgrade 4 kliknut!")
+                    cost = 120
+                    if money_count >= cost:
+                        money_count -= cost
+                        dirt_money_min_value -= 2
+                        print("Zakoupen upgrade: Šikovné ruce")
+                        print(f"Nová maximální pokuta při rýžování: {dirt_money_min_value}")
+                    else:
+                        print("Nedostatek peněz pro Šikovné ruce!")
+
                 if upgrade5_rect.collidepoint(mouse_x, mouse_y):
-                    print("Upgrade 5 kliknut!")
+                    cost = 180
+                    if pan_speed <= 10:
+                        if money_count >= cost:
+                            money_count -= cost
+                            pan_speed += 1
+                            print("Zakoupen upgrade: Rychlejší rýžování")
+                            print(f"Nová rychlost pánve: {pan_speed}")
+                        else:
+                            print("Nedostatek peněz pro Rychlejší rýžování!")
+                    else:
+                        print("maximální možná rychlost!")
                 if upgrade6_rect.collidepoint(mouse_x, mouse_y):
-                    print("Upgrade 6 kliknut!")
+                    cost = 200
+                    if money_count >= cost:
+                        money_count -= cost
+                        gold_money_min_value += 1
+                       
+                        print("Zakoupen upgrade: Dotace")
+                        print(f"Nová minimální výplata při rýžování: {gold_money_min_value}")
+                        
+                    else:
+                        print("Nedostatek peněz pro Dotace!")
                  
     # Kreslení obdélníků
         
@@ -470,9 +563,13 @@ while Game:
         pygame.draw.rect(window, upgrade_color, upgrade4_rect)
         pygame.draw.rect(window, upgrade_color, upgrade5_rect)
         pygame.draw.rect(window, upgrade_color, upgrade6_rect)
+        draw_upgrades()
+
         pygame.display.flip()
         
         
         
        
+
+
 
