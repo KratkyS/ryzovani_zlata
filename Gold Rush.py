@@ -47,7 +47,7 @@ resized_gold_background = pygame.transform.scale(background_gold, (800, 700))
 image_path_dirt = os.path.join("images", "dirt_minigame.png")
 background_dirt = pygame.image.load(image_path_dirt).convert_alpha()
 objekt_dirt = pygame.Surface(background_dirt.get_size())
-dirt_count = 3
+dirt_count_balls = 3
 dirt_size = 100
 dirt_x = []
 dirt_y = []
@@ -117,7 +117,7 @@ def popcorn_plus():
 def popcorn_minus():
     window.blit(popcorn_1, (430, 40)) 
 
-for index in range(dirt_count):
+for index in range(dirt_count_balls):
     dirt_x.append(random.randint(10, 600))
     dirt_y.append(random.randint(10, 600))
     dirt_rects.append(pygame.Rect(dirt_x[index], dirt_y[index], dirt_size, dirt_size))
